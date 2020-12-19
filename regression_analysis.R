@@ -357,7 +357,6 @@ use.amplitudes.p_adj = use.model.params %>%
 res.amplitudes.p_adj = res.model.params %>%
   filter(term == "amplitude") %>%
   mutate(p.value.BH = p.adjust(p.value, method="BH")) %>%
-  mutate(significant = p.value.BH < 0.05) %>%
   select(-hos_year) %>%
   arrange(org, drug_code)
 
