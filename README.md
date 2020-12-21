@@ -29,19 +29,19 @@ Due to data sharing restrictions, we are unable to publish the raw antibiotic us
   - `correlations.csv`: table of calculated Spearman correlation coefficients for seasonal use and resistance (Output by `correlation_analysis.R`)
 
 - `figures/`
-  - `Fig1.pdf`: (Output by `make_figures.R`)
-  - `Fig2.pdf`: (Output by `make_figures.R`)
-  - `Fig3.pdf`: (Output by `make_figures.R`)
-  - `Fig4.pdf`: (Output by `make_figures.R`)
-  - `Fig5.pdf`: (Output by `make_figures.R`)
-  - `FigS1.pdf`: (Output by `make_figures.R`)
-  - `FigS2.pdf`: (Output by `make_figures.R`)
-  - `FigS3.pdf`: (Output by `make_figures.R`)
-  - `Table_S1.csv`
-  - `Table_S2.csv`
-  - `Table_S3.csv`
-  - `Table_S4.csv`: (Output by `regression_analysis.R`)
-  - `Table_S5.csv`: (Output by `regression_analysis.R`)
+  - `Fig1.pdf`: "Seasonal patterns of antibiotic use by class" (Output by `make_figures.R`)
+  - `Fig2.pdf`: "Seasonality of antibiotic use and resistance by class in *Staphylococcus aureus*" (Output by `make_figures.R`)
+  - `Fig3.pdf`: "Amplitudes of seasonality of resistance by species and antibiotic class" (Output by `make_figures.R`)
+  - `Fig4.pdf`: "Phases of seasonality of use and resistance by species and antibiotic class" (Output by `make_figures.R`)
+  - `Fig5.pdf`: "Seasonal resistance to multiple antibiotics is positively correlated with seasonal use of penicillins and macrolides" (Output by `make_figures.R`)
+  - `FigS1.pdf`: "Seasonality of antibiotic use and resistance by class in *Escherichia coli*" (Output by `make_figures.R`)
+  - `FigS2.pdf`: "Seasonality of antibiotic use and resistance by class in *Klebsiella pneumoniae*" (Output by `make_figures.R`)
+  - `FigS3.pdf`: "Seasonality of use and resistance for penicillins in *Escherichia coli* with a 12-month period model" (Output by `make_figures.R`)
+  - `Table_S1.csv`: "Percent of claims by individual antibiotics within each class"
+  - `Table_S2.csv`: "Total number of isolates by demographics"
+  - `Table_S3.csv`: "Antibiotics included in analysis and percent resistance by hospital"
+  - `Table_S4.csv`: "Comparison of the Akaike information criterion (AIC) values across two sinusoidal models for antibiotic use" (Output by `regression_analysis.R`)
+  - `Table_S5.csv`: "Comparison of the Akaike information criterion (AIC) values across two sinusoidal models for antibiotic resistance" (Output by `regression_analysis.R`)
   
 
 Correspondence: Daphne Sun <dssun@g.harvard.edu>
