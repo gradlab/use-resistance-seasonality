@@ -21,10 +21,10 @@ Due to data sharing restrictions, we are unable to publish the raw antibiotic us
   - `model_amplitude_pvalues_resistance.csv`: table of model-fitted amplitudes for seasonal antibiotic resistance (same as in `model_values_resistance.csv`), with p-values before and after multiple testing correction (Output by `regression_analysis.R`)
   
   - `seasonal_deviates_use.csv`: table of seasonal deviates of use averaged by month for each antibiotic class (Output by `regression_analysis.R`)
-  - `seasonal_deviates_resistance.csv`: table of seasonal deviates of resistance averaged by month for each species-antibiotic combination (Output by `regression_analysis.R`)
+  - `seasonal_deviates_resistance.csv`: table of seasonal deviates in resistance averaged by month for each species-antibiotic combination (Output by `regression_analysis.R`)
   
   - `Ecoli_AMC_AMP_12m_model_values.csv`: table of model-fitted parameters for seasonal antibiotic resistance to Amoxicillin/Clavulanate and Ampicillin in *E. coli* using a 12-month period sinuosoidal model, as opposed to the 6-month period model, which is reported in the `model_values_resistance.csv` file. These data are used to generate Supplementary Figure 3. (Output by `regression_analysis.R`)
-  - `Ecoli_AMC_AMP_12m_seasonal_deviates.csv`: table of seasonal deviates for resistance to Amoxicillin/Clavulanate and Ampicillin in *E. coli* calculated from the output of the model fits to 12-month period sinuosoidal model, as opposed to the 6-month period model, which is reported in the `seasonal_deviates_resistance.csv` file. These data are used to generate Supplementary Figure 3. (Output by `regression_analysis.R`)
+  - `Ecoli_AMC_AMP_12m_seasonal_deviates.csv`: table of seasonal deviates in resistance to Amoxicillin/Clavulanate and Ampicillin in *E. coli* calculated from the output of the model fits to 12-month period sinuosoidal model, as opposed to the 6-month period model, which is reported in the `seasonal_deviates_resistance.csv` file. These data are used to generate Supplementary Figure 3. (Output by `regression_analysis.R`)
   
   - `correlations.csv`: table of calculated Spearman correlation coefficients for seasonal use and resistance (Output by `correlation_analysis.R`)
 
