@@ -2,7 +2,7 @@
 
 ### Daphne S. Sun, Stephen M. Kissler, Sanjat Kanjilal, Scott W. Olesen, Marc Lipsitch, Yonatan H. Grad
 
-Included are all code and raw data need to reproduce all analyses associated with this [preprint] (https://www.medrxiv.org/content/10.1101/2020.12.21.20248670v1). Antibiotic use data was obtained from the Massachusetts [All Payers Claims Database] (https://www.chiamass.gov/ma-apcd/). Antibiotic resistance data for 3 organisms, *Staphylococcus aureus*, *Escherichia coli*, and *Klebsiella pneumoniae*, was obtained from Brigham and Women's Hospital and Massachusetts General Hospital. 
+Included are all code and raw data need to reproduce all analyses associated with this preprint. Antibiotic use data was obtained from the Massachusetts All Payers Claims Database (https://www.chiamass.gov/ma-apcd/). Antibiotic resistance data for 3 organisms, *Staphylococcus aureus*, *Escherichia coli*, and *Klebsiella pneumoniae*, was obtained from Brigham and Women's Hospital and Massachusetts General Hospital. 
 
 # Files 
 - `README.md`: this file
