@@ -11,20 +11,20 @@ library(ggpubr)
 # ######################################################
 
 #Load antibiotic use data
-data.use = read_csv("data/antibiotic_use_data.csv")
+data.use = read_csv("raw_data/antibiotic_use_data.csv")
 
 #Load model values
-use.model.params = read_csv("data/model_values_use.csv")
-res.model.params = read_csv("data/model_values_resistance.csv")
-EC.12m.model.params = read_csv("data/Ecoli_AMC_AMP_12m_model_values.csv")
+use.model.params = read_csv("tables/model_values_use.csv")
+res.model.params = read_csv("tables/model_values_resistance.csv")
+EC.12m.model.params = read_csv("tables/Ecoli_AMC_AMP_12m_model_values.csv")
 
 #Load use and resistance seasonal deviates
-use.deviates = read_csv("data/seasonal_deviates_use.csv")
-res.deviates = read_csv("data/seasonal_deviates_resistance.csv")
-EC.12m.deviates = read_csv("data/Ecoli_AMC_AMP_12m_seasonal_deviates.csv")
+use.deviates = read_csv("tables/seasonal_deviates_use.csv")
+res.deviates = read_csv("tables/seasonal_deviates_resistance.csv")
+EC.12m.deviates = read_csv("tables/Ecoli_AMC_AMP_12m_seasonal_deviates.csv")
 
 #Load use-resistance correlations resuls
-correlations = read_csv("data/correlations.csv")
+correlations = read_csv("tables/correlations.csv")
 
 #Define colors to be used across figures
 colors = setNames( c("#220050", "#b30059","#0091a8","#359023", "#ffa500"), 
@@ -40,6 +40,7 @@ labels = data.frame(drug_class = c("Macrolides", "Nitrofurans", "Penicillins", "
                     y.pos = c(10, 2.3, 20, 7.5, 4.5))
 
 f1a = data.use %>%
+  mutate(year_month = paste(as.character(year), as.character(str_pad(month, 2, pad = "0")), sep = "-")) %>%
   mutate(x = dense_rank(year_month)) %>%
   ggplot(aes(x=x, y=claims_per_1000ppl, group=drug_class, color=drug_class)) +
   geom_point(size = 0.7) +
@@ -167,18 +168,18 @@ plot_use_resistance_func = function(deviates, drug, class, u_a, u_p, u_o, u_low,
 
 use_res_plots = res.model.params %>%
   filter(term %in% c("amplitude", "phase")) %>%
-  select(org, drug_name, drug_class, omega, term, estimate, ci.lower, ci.upper) %>%
-  gather(variable, value, -(c("org","drug_name","drug_class", "term", "omega"))) %>%
+  select(organism, drug_name, drug_class, omega, term, estimate, ci.lower, ci.upper) %>%
+  gather(variable, value, -(c("organism","drug_name","drug_class", "term", "omega"))) %>%
   unite(temp, term, variable) %>%
   spread(temp, value) %>%
   #add resistance seasonal deviates table
   left_join(
     res.deviates %>%
-      nest(-org, -drug_name, -drug_class) %>%
+      nest(-organism, -drug_name, -drug_class) %>%
       rename(deviates_table = data),
-    by = c("org","drug_name","drug_class")
+    by = c("organism","drug_name","drug_class")
   ) %>%
-  select(org, drug_name, drug_class, res_amplitude = amplitude_estimate, res_phase = phase_estimate,
+  select(organism, drug_name, drug_class, res_amplitude = amplitude_estimate, res_phase = phase_estimate,
          res_omega = omega, res_upper = amplitude_ci.upper, res_lower = amplitude_ci.lower, deviates_table) %>%
   #add use model params
   left_join(
@@ -207,7 +208,7 @@ use_res_plots = res.model.params %>%
 
 #Make figure 2
 f2_plots = use_res_plots %>%
-  filter(org == "S. aureus") %>%
+  filter(organism == "S. aureus") %>%
   arrange(drug_class, drug_name) %>%
   pull(plot)
 
@@ -218,7 +219,7 @@ f2 = do.call(plot_grid, c(f2_plots, nrow = 2, ncol = 3)) %>%
 
 #Make figure S1
 fS1_plots = use_res_plots %>%
-  filter(org == "E. coli") %>%
+  filter(organism == "E. coli") %>%
   arrange(drug_class, drug_name) %>%
   pull(plot)
 
@@ -229,7 +230,7 @@ fS1 = do.call(plot_grid, c(fS1_plots, nrow = 2, ncol = 3)) %>%
 
 #Make figure S2
 fS2_plots = use_res_plots %>%
-  filter(org == "K. pneumoniae") %>%
+  filter(organism == "K. pneumoniae") %>%
   arrange(drug_class, drug_name) %>%
   pull(plot)
 
@@ -245,18 +246,18 @@ fS2 = do.call(plot_grid, c(fS2_plots, nrow = 2, ncol = 2)) %>%
 #Plot E. coli AMC and AMP resistance with 12-month period
 fS3_plots = EC.12m.model.params %>%
   filter(term %in% c("amplitude", "phase")) %>%
-  select(org, drug_name, drug_class, omega, term, estimate, ci.lower, ci.upper) %>%
-  gather(variable, value, -(c("org","drug_name","drug_class", "term", "omega"))) %>%
+  select(organism, drug_name, drug_class, omega, term, estimate, ci.lower, ci.upper) %>%
+  gather(variable, value, -(c("organism","drug_name","drug_class", "term", "omega"))) %>%
   unite(temp, term, variable) %>%
   spread(temp, value) %>%
   #add resistance seasonal deviates table
   left_join(
     EC.12m.deviates %>%
-      nest(-org, -drug_name, -drug_class) %>%
+      nest(-organism, -drug_name, -drug_class) %>%
       rename(deviates_table = data),
-    by = c("org","drug_name","drug_class")
+    by = c("organism","drug_name","drug_class")
   ) %>%
-  select(org, drug_name, drug_class, res_amplitude = amplitude_estimate, res_phase = phase_estimate,
+  select(organism, drug_name, drug_class, res_amplitude = amplitude_estimate, res_phase = phase_estimate,
          res_omega = omega, res_upper = amplitude_ci.upper, res_lower = amplitude_ci.lower, deviates_table) %>%
   #add use model params
   left_join(
@@ -317,17 +318,17 @@ plot_amplitudes_func = function(dat, title) {
 
 f3_SA_plot = res.model.params %>%
   filter(term == "amplitude") %>%
-  filter(org == "S. aureus") %>%
+  filter(organism == "S. aureus") %>%
   plot_amplitudes_func(., "S. aureus")
 
 f3_EC_plot = res.model.params %>%
   filter(term == "amplitude") %>%
-  filter(org == "E. coli") %>%
+  filter(organism == "E. coli") %>%
   plot_amplitudes_func(., "E. coli")
 
 f3_KP_plot = res.model.params %>%
   filter(term == "amplitude") %>%
-  filter(org == "K. pneumoniae") %>%
+  filter(organism == "K. pneumoniae") %>%
   plot_amplitudes_func(., "K. pneumoniae")
 
 #Make figure 3
@@ -349,15 +350,15 @@ res.phases = bind_rows(
     mutate(estimate = estimate + 6, ci.lower = ci.lower + 6, ci.upper = ci.upper + 6)
 ) %>%
   #filter out org/drug combinations that did not meet criteria for seasonality
-  filter(!(org == "S. aureus" & drug_code %in% c("PEN", "TET"))) %>%
-  filter(!(org == "E. coli" & drug_code == "TET")) %>%
-  filter(!(org == "K. pneumoniae" & drug_code %in% c("AMC", "TET"))) %>%
+  filter(!(organism == "S. aureus" & drug_code %in% c("PEN", "TET"))) %>%
+  filter(!(organism == "E. coli" & drug_code == "TET")) %>%
+  filter(!(organism == "K. pneumoniae" & drug_code %in% c("AMC", "TET"))) %>%
   #manually edit phase for K.pneumo/NIT (subtract 12m) for aesthetic purposes for figure
-  mutate(estimate = ifelse(org == "K. pneumoniae" & drug_code == "NIT", estimate - 12, estimate),
-         ci.lower = ifelse(org == "K. pneumoniae" & drug_code == "NIT", ci.lower - 12, ci.lower),
-         ci.upper = ifelse(org == "K. pneumoniae" & drug_code == "NIT", ci.upper - 12, ci.upper)
+  mutate(estimate = ifelse(organism == "K. pneumoniae" & drug_code == "NIT", estimate - 12, estimate),
+         ci.lower = ifelse(organism == "K. pneumoniae" & drug_code == "NIT", ci.lower - 12, ci.lower),
+         ci.upper = ifelse(organism == "K. pneumoniae" & drug_code == "NIT", ci.upper - 12, ci.upper)
   ) %>%
-  mutate(org_drug = paste(org, drug_code, sep = "/")) 
+  mutate(org_drug = paste(organism, drug_code, sep = "/")) 
 
 #Make use phases table
 use.phases = bind_rows(
@@ -416,7 +417,7 @@ f4 = ggplot(data = res.phases) +
 #Function to plot use-resistance correlations for each species
 plot_corr_func = function(dat, o) {
   d = dat %>%
-    filter(org == o) %>%
+    filter(organism == o) %>%
     mutate(use_class_short = substr(use_class, 1,3)) %>%
     mutate(use_res = paste(res_drug_code, use_class_short, sep = "/"))
   

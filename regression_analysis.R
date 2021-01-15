@@ -1,6 +1,4 @@
 #This script runs the non-linear regressions to fit the seasonal antibiotic use and resistance data to sinusoidal models. 
-#Due to data sharing restrictions, we cannot provide the input files needed to run this code. 
-#However, we do provide the output files from this code in the "data/" folder, which can be used to reproduce the figures in the publication.
 
 #Load libraries 
 library(tidyverse)
@@ -11,13 +9,13 @@ library(plotrix)
 # Inputs
 # ######################################################
 
-#Load raw use dataset (unpublished)
-load("data_use_BOS.RData") #data.use.BOS
+#Load raw use dataset
+data.use = read_csv("raw_data/antibiotic_use_data.csv")
 
-#Load raw resistance datasets for each organism (unpublished)
-load("data_SA.RData") #data.SA
-load("data_EC.RData") #data.EC
-load("data_KP.RData") #data.KP
+#Load raw resistance datasets for each organism
+data.SA = read_csv("raw_data/Saureus_antibiotic_resistance_data.csv")
+data.EC = read_csv("raw_data/Ecoli_antibiotic_resistance_data.csv")
+data.KP = read_csv("raw_data/Kpneumoniae_antibiotic_resistance_data.csv")
 
 # ######################################################
 # Regression functions
@@ -121,11 +119,11 @@ make_deviates_table_func = function(data, model_summary, on) {
 # ######################################################
 
 #Run use regressions for each drug class using both a 12-month and 6-month period
-results.use = data.use.BOS %>%
+results.use = data.use %>%
   #convert years to characters
   mutate(year = as.character(year)) %>%
   #define the outcome variable (y): claims/1000ppl
-  mutate(y = rxpkp) %>%
+  mutate(y = claims_per_1000ppl) %>%
   #nest dataframe by drug class
   nest(-drug_class) %>%
   #define 2 models (12-month and 6-month period) to run for each drug class 
@@ -145,10 +143,12 @@ results.use = data.use.BOS %>%
 
 #Run resistance regressions of S. aureus
 results.SA = data.SA %>%
+  #make hospital/year column
+  mutate(hos_year = paste(hospital, as.character(year), sep = "_")) %>%
   #define the outcome variable (y): log2(MIC)
-  mutate(y = as.double(log_value)) %>%
+  mutate(y = log2(MIC)) %>%
   #nest dataframe by organism and drug
-  nest(-organism, -org, -drug_code, -drug_name, -drug_class) %>%
+  nest(-organism, -drug_code, -drug_name, -drug_class) %>%
   #define 2 models (12-month and 6-month period) to run for each organism/drug combination 
   left_join(crossing(drug_code = c("CIP", "ERY", "NIT", "OXA", "PEN", "TET"), omega = c(2*pi/6, 2*pi/12)), by = c("drug_code")) %>%
   mutate(model_type = paste0("period_", as.character(2*pi/omega), "m")) %>%
@@ -156,7 +156,7 @@ results.SA = data.SA %>%
   #create a model matrix for each model
   mutate(model_matrix = map(data, ~ make_model_matrix_func(., "hos_year"))) %>%
   #run the regression
-  mutate(model = pmap(.l = list(data = data, model_matrix = model_matrix, omega = omega, A_init=0.1, on="hos_year"), .f = run_regression_func)) %>%
+  mutate(model = pmap(.l = list(data = data, model_matrix = model_matrix, omega = omega, A_init = 0.1, on = "hos_year"), .f = run_regression_func)) %>%
   #calculate the AIC for each model
   mutate(AIC = map_dbl(model, ~ AIC(.))) %>%
   #extract model parameters into a table
@@ -166,8 +166,9 @@ results.SA = data.SA %>%
 
 #Run resistance regressions of E. coli 
 results.EC = data.EC %>%
-  mutate(y = as.double(log_value)) %>%
-  nest(-organism, -org, -drug_code, -drug_name, -drug_class) %>%
+  mutate(hos_year = paste(hospital, as.character(year), sep = "_")) %>%
+  mutate(y = log2(MIC)) %>%
+  nest(-organism, -drug_code, -drug_name, -drug_class) %>%
   left_join(crossing(drug_code = c("AMC", "AMP", "CIP", "NIT", "TET"), omega = c(2*pi/6, 2*pi/12)), by = c("drug_code")) %>%
   mutate(model_type = paste0("period_", as.character(2*pi/omega), "m")) %>%
   mutate(period = 2*pi/omega) %>%
@@ -179,8 +180,9 @@ results.EC = data.EC %>%
 
 #Run resistance regressions of K. pneumo 
 results.KP = data.KP %>%
-  mutate(y = as.double(log_value)) %>%
-  nest(-organism, -org, -drug_code, -drug_name, -drug_class) %>%
+  mutate(hos_year = paste(hospital, as.character(year), sep = "_")) %>%
+  mutate(y = log2(MIC)) %>%
+  nest(-organism, -drug_code, -drug_name, -drug_class) %>%
   left_join(crossing(drug_code = c("AMC", "CIP", "NIT", "TET"), omega = c(2*pi/6, 2*pi/12)), by = c("drug_code")) %>%
   mutate(model_type = paste0("period_", as.character(2*pi/omega), "m")) %>%
   mutate(period = 2*pi/omega) %>%
@@ -207,14 +209,14 @@ table.S4 = results.use %>%
 
 #Make resistance model comparison table (S5)
 table.S5 = bind_rows(results.SA, results.EC, results.KP) %>%
-  select(org, drug_name, model_type, AIC) %>%
-  group_by(org, drug_name) %>%
+  select(organism, drug_name, model_type, AIC) %>%
+  group_by(organism, drug_name) %>%
   mutate(min = min(AIC)) %>%
   ungroup() %>%
   mutate(diff = AIC-min) %>%
   mutate_at(c("AIC", "diff"), ~ as.character(round(., 1))) %>%
   mutate(AIC_2 = paste0(AIC, " (+", diff, ")")) %>%
-  select(org, drug_name, model_type, AIC_2) %>%
+  select(organism, drug_name, model_type, AIC_2) %>%
   spread(model_type, AIC_2)
 
 #Save AIC tables to file
@@ -268,7 +270,7 @@ use.model.params.raw = results.use %>%
   unnest(model_summary)
 
 res.model.params.raw = bind_rows(results.SA, results.EC, results.KP) %>%
-  select(org, drug_code, drug_name, drug_class, period, omega, AIC, model_summary) %>% 
+  select(organism, drug_code, drug_name, drug_class, period, omega, AIC, model_summary) %>% 
   unnest(model_summary)
 
 #Make spread table of just amplitude, phase, and period parameters, then edit amplitudes and phases
@@ -291,7 +293,7 @@ use.model.params.edit = use.model.params.raw %>%
 res.model.params.edit = res.model.params.raw %>%
   filter(term %in% c("amplitude", "phase")) %>%
   select(-hos_year) %>%
-  gather(variable, value, -(c("org", "drug_code", "drug_name", "drug_class", "term", "omega", "period", "AIC"))) %>%
+  gather(variable, value, -(c("organism", "drug_code", "drug_name", "drug_class", "term", "omega", "period", "AIC"))) %>%
   unite(temp, term, variable) %>%
   spread(temp, value) %>%
   mutate(period = 2*pi/omega) %>%
@@ -301,7 +303,7 @@ res.model.params.edit = res.model.params.raw %>%
                                .f = convert_a_phases_func)) %>%
   select(-amplitude_estimate, -amplitude_ci.lower, -amplitude_ci.upper, -phase_estimate, - phase_ci.lower, -phase_ci.upper) %>%
   unnest(estimates_edit) %>%
-  gather(variable, value, -(c("org", "drug_code", "drug_name", "drug_class", "omega", "period", "AIC"))) %>%
+  gather(variable, value, -(c("organism", "drug_code", "drug_name", "drug_class", "omega", "period", "AIC"))) %>%
   separate(variable, c("term", "temp"), "_") %>%
   spread(temp, value)
 
@@ -316,9 +318,9 @@ use.model.params.full = use.model.params.raw %>%
 res.model.params.full = res.model.params.raw %>%
   filter(!(term %in% c("amplitude", "phase"))) %>%
   bind_rows(res.model.params.edit) %>%
-  select(org, drug_code, drug_name, drug_class, period, omega, AIC, term, hos_year, estimate, ci.lower, ci.upper, std.error, statistic, p.value) %>%
+  select(organism, drug_code, drug_name, drug_class, period, omega, AIC, term, hos_year, estimate, ci.lower, ci.upper, std.error, statistic, p.value) %>%
   mutate(term = factor(term, levels = c("amplitude", "phase", "slope", "intercept"))) %>%
-  arrange(org, drug_code, term)
+  arrange(organism, drug_code, term)
 
 #Filter models to only keep models with the lower AIC for each drug class or org/drug combination
 use.model.params = use.model.params.full %>%
@@ -329,7 +331,7 @@ use.model.params = use.model.params.full %>%
   select(-AIC, -rank) 
 
 res.model.params = res.model.params.full %>%
-  group_by(org, drug_code, drug_name, drug_class) %>%
+  group_by(organism, drug_code, drug_name, drug_class) %>%
   mutate(rank = dense_rank(AIC)) %>%
   ungroup() %>%
   filter(rank == 1) %>%
@@ -337,12 +339,12 @@ res.model.params = res.model.params.full %>%
 
 #Make separate table of model params for E. coli/AMC and E. coli/AMP resistance with 12m period
 EC.12m.params = res.model.params.full %>%
-  filter(org == "E. coli" & drug_code %in% c("AMC", "AMP") & period == 12)
+  filter(organism == "E. coli" & drug_code %in% c("AMC", "AMP") & period == 12)
 
 #Save model values to file
-write_csv(use.model.params, "data/model_values_use.csv")
-write_csv(res.model.params, "data/model_values_resistance.csv")
-write_csv(EC.12m.params, "data/Ecoli_AMC_AMP_12m_model_values.csv")
+write_csv(use.model.params, "tables/model_values_use.csv")
+write_csv(res.model.params, "tables/model_values_resistance.csv")
+write_csv(EC.12m.params, "tables/Ecoli_AMC_AMP_12m_model_values.csv")
 
 # ######################################################
 # Multiple testing correction on amplitude estimates
@@ -358,11 +360,11 @@ res.amplitudes.p_adj = res.model.params %>%
   filter(term == "amplitude") %>%
   mutate(p.value.BH = p.adjust(p.value, method="BH")) %>%
   select(-hos_year) %>%
-  arrange(org, drug_code)
+  arrange(organism, drug_code)
 
 #Save amplitude p-values to file
-write_csv(use.amplitudes.p_adj, "data/model_amplitude_pvalues_use.csv")
-write_csv(res.amplitudes.p_adj, "data/model_amplitude_pvalues_resistance.csv")
+write_csv(use.amplitudes.p_adj, "tables/model_amplitude_pvalues_use.csv")
+write_csv(res.amplitudes.p_adj, "tables/model_amplitude_pvalues_resistance.csv")
 
 # ######################################################
 # Make seasonal deviates tables and save to file
@@ -380,9 +382,9 @@ deviates.use = results.use %>%
   unnest(deviates)
 
 deviates.res = bind_rows(results.SA, results.EC, results.KP) %>%
-  select(org, drug_code, drug_name, drug_class, period, AIC, deviates) %>%
+  select(organism, drug_code, drug_name, drug_class, period, AIC, deviates) %>%
   #filter to just model with lower AIC for each org/drug
-  group_by(org, drug_code, drug_name, drug_class) %>%
+  group_by(organism, drug_code, drug_name, drug_class) %>%
   mutate(rank = dense_rank(AIC)) %>%
   ungroup() %>%
   filter(rank == 1) %>%
@@ -390,12 +392,12 @@ deviates.res = bind_rows(results.SA, results.EC, results.KP) %>%
   unnest(deviates)
 
 deviates.EC.12m = results.EC %>%
-  filter(org == "E. coli" & drug_code %in% c("AMC", "AMP") & period == 12) %>%
-  select(org, drug_code, drug_name, drug_class, period, deviates) %>%
+  filter(organism == "E. coli" & drug_code %in% c("AMC", "AMP") & period == 12) %>%
+  select(organism, drug_code, drug_name, drug_class, period, deviates) %>%
   unnest(deviates)
 
 #Save seasonal deviates tables to file
-write_csv(deviates.use, "data/seasonal_deviates_use.csv")
-write_csv(deviates.res, "data/seasonal_deviates_resistance.csv")
-write_csv(deviates.EC.12m, "data/Ecoli_AMC_AMP_12m_seasonal_deviates.csv")
+write_csv(deviates.use, "tables/seasonal_deviates_use.csv")
+write_csv(deviates.res, "tables/seasonal_deviates_resistance.csv")
+write_csv(deviates.EC.12m, "tables/Ecoli_AMC_AMP_12m_seasonal_deviates.csv")
 

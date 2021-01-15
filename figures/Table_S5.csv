@@ -1,4 +1,4 @@
-org,drug_name,period_12m,period_6m
+organism,drug_name,period_12m,period_6m
 E. coli,Amoxicillin/Clavulanate,343849.1 (+4.2),343844.9 (+0)
 E. coli,Ampicillin,526712.7 (+5),526707.7 (+0)
 E. coli,Ciprofloxacin,503167.1 (+0),503174 (+6.9)
