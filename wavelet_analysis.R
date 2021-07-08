@@ -1,0 +1,67 @@
+#This script performs a wavelet analysis on the antibiotic use data
+
+#Load libraries 
+library(tidyverse)
+library(magrittr)
+
+# ######################################################
+# Inputs
+# ######################################################
+
+#Load antibiotic use data
+data.use = read_csv("raw_data/antibiotic_use_data.csv")
+
+#Edit input table
+data.use = data.use %>%
+  mutate(month = month - 1) %>%
+  mutate(year_month = year + month/12) %>%
+  mutate(t = (year - min(year)) * 12 + month) 
+
+# ######################################################
+# Calculate wavelets 
+# ######################################################
+
+#Compute use wavelet for each antibiotic class (uses WaveletComp package)
+
+fence = function(x, lower, upper) pmax(lower, pmin(upper, x))
+
+wt_plot_data = function(w) {
+  with(w, {
+    crossing(i = seq_along(axis.1), j = seq_along(axis.2)) %>%
+      mutate(x = axis.1[i],
+             y = axis.2[j],
+             scale = Scale[j],
+             amplitude = map2_dbl(j, i, ~ Ampl[.x, .y]),
+             power = map2_dbl(j, i, ~ Power[.x, .y]),
+             p.value = map2_dbl(j, i, ~ Power.pval[.x, .y]),
+             coi_raw = approx(coi.1, coi.2, x)$y,
+             coi = fence(coi_raw, min(y), max(y)),
+             sig = as.double(p.value < 0.05))
+  })
+}
+
+wavelet.results = data.use %>%
+  nest(-drug_class) %>%
+  mutate(wavelet = map(data, ~ WaveletComp::analyze.wavelet(., "claims_per_10000ppl_per_day", verbose = FALSE))) %>%
+  mutate(wavelet_plot_data = map(wavelet, wt_plot_data))
+
+
+#Make wavelet plot (Figure S5)
+wavelet_plot = wavelet.results %>%
+  select(drug_class, wavelet_plot_data) %>%
+  unnest() %>%
+  ggplot(aes(x-1, y)) +
+  geom_tile(aes(fill = amplitude)) +
+  geom_ribbon(aes(ymin = coi, ymax = max(y)), alpha = 0.25) +
+  geom_contour(aes(z = as.double(p.value < 0.05)), color = 'black', size = 0.5, bins = 1) +
+  facet_wrap(~drug_class) +
+  scale_fill_distiller(palette = 'RdYlBu') +
+  geom_hline(yintercept = 3.65, linetype = 2) +
+  geom_hline(yintercept = 2.58, linetype = 2) +
+  xlab('time (months since Jan 2011)') +
+  ylab('log2 period (months)') +
+  theme_minimal() +
+  theme(text = element_text(size = 14))
+
+#Save figure
+ggsave(wavelet_plot, filename = "figures/SupplementaryFigure5.pdf", width = 7.5, height = 5)

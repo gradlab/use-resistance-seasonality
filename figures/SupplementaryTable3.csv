@@ -1,0 +1,16 @@
+organism,drug,BWH,MGH
+E. coli,Amoxicillin/Clavulanate,17.5,17.2
+E. coli,Ampicillin,47.4,47
+E. coli,Ciprofloxacin,22.2,21.1
+E. coli,Nitrofurantoin,5.9,5.1
+E. coli,Tetracycline,28.8,29.3
+K. pneumoniae,Amoxicillin/Clavulanate,10.1,8.2
+K. pneumoniae,Ciprofloxacin,11.5,11
+K. pneumoniae,Nitrofurantoin,69.2,68.1
+K. pneumoniae,Tetracycline,21.1,18.3
+S. aureus,Ciprofloxacin,29.5,30.7
+S. aureus,Erythromycin,51.1,54.9
+S. aureus,Nitrofurantoin,1.1,1
+S. aureus,Oxacillin,29.8,35.9
+S. aureus,Penicillin,81.5,84.3
+S. aureus,Tetracycline,6.5,6

@@ -9,6 +9,7 @@ Included are all code and raw data need to reproduce all analyses associated wit
 
 - `regression_analysis.R`: code to run non-linear regressions to fit seasonal use and resistance data to sinusodal models
 - `correlation_analysis.R`: code to calculate correlations between use and resistance seasonal deviates 
+- `wavelet_analysis.R`: code to perform wavelet analysis for antibiotic use data
 - `make_figures.R`: code to make all figures included in the publication from outputs of `regression_analysis.R` and `correlation_analysis.R`
 
 - `raw_data/`: contains raw antibiotic use and resistance data
@@ -30,22 +31,27 @@ Included are all code and raw data need to reproduce all analyses associated wit
   - `Ecoli_AMC_AMP_12m_model_values.csv`: table of model-fitted parameters for seasonal antibiotic resistance to Amoxicillin/Clavulanate and Ampicillin in *E. coli* using a 12-month period sinuosoidal model, as opposed to the 6-month period model, which is reported in the `model_values_resistance.csv` file. These data are used to generate Supplementary Figure 3. (Output by `regression_analysis.R`)
   - `Ecoli_AMC_AMP_12m_seasonal_deviates.csv`: table of seasonal deviates in resistance to Amoxicillin/Clavulanate and Ampicillin in *E. coli* calculated from the output of the model fits to 12-month period sinuosoidal model, as opposed to the 6-month period model, which is reported in the `seasonal_deviates_resistance.csv` file. These data are used to generate Supplementary Figure 3. (Output by `regression_analysis.R`)
   
+  - `model_values_resistance_under65.csv`: table of sinusoidal model-fitted parameters for seasonal antibiotic resistance in each species-antibiotic combination, after excluding isolates from patinets 65 years or older  (Output by `regression_analysis.R`)
+  
   - `correlations.csv`: table of calculated Spearman correlation coefficients for seasonal use and resistance (Output by `correlation_analysis.R`)
 
 - `figures/`: contains all figures associated with this publication
-  - `Fig1.pdf`: "Seasonal patterns of antibiotic use by class" (Output by `make_figures.R`)
-  - `Fig2.pdf`: "Seasonality of antibiotic use and resistance by class in *Staphylococcus aureus*" (Output by `make_figures.R`)
-  - `Fig3.pdf`: "Amplitudes of seasonality of resistance by species and antibiotic class" (Output by `make_figures.R`)
-  - `Fig4.pdf`: "Phases of seasonality of use and resistance by species and antibiotic class" (Output by `make_figures.R`)
-  - `Fig5.pdf`: "Seasonal resistance to multiple antibiotics is positively correlated with seasonal use of penicillins and macrolides" (Output by `make_figures.R`)
-  - `FigS1.pdf`: "Seasonality of antibiotic use and resistance by class in *Escherichia coli*" (Output by `make_figures.R`)
-  - `FigS2.pdf`: "Seasonality of antibiotic use and resistance by class in *Klebsiella pneumoniae*" (Output by `make_figures.R`)
-  - `FigS3.pdf`: "Seasonality of use and resistance for penicillins in *Escherichia coli* with a 12-month period model" (Output by `make_figures.R`)
-  - `Table_S1.csv`: "Percent of claims by individual antibiotics within each class"
-  - `Table_S2.csv`: "Total number of isolates by demographics"
-  - `Table_S3.csv`: "Antibiotics included in analysis and percent resistance by hospital"
-  - `Table_S4.csv`: "Comparison of the Akaike information criterion (AIC) values across two sinusoidal models for antibiotic use" (Output by `regression_analysis.R`)
-  - `Table_S5.csv`: "Comparison of the Akaike information criterion (AIC) values across two sinusoidal models for antibiotic resistance" (Output by `regression_analysis.R`)
-  
+  - `Figure1.pdf`: "Seasonal patterns of antibiotic use by class" (Output by `make_figures.R`)
+  - `Figure2.pdf`: "Seasonality of antibiotic use and resistance by class in *Staphylococcus aureus*" (Output by `make_figures.R`)
+  - `Figure3.pdf`: "Amplitudes of seasonality of resistance by species and antibiotic class" (Output by `make_figures.R`)
+  - `Figure4.pdf`: "Phases of seasonality of use and resistance by species and antibiotic class" (Output by `make_figures.R`)
+  - `Figure5.pdf`: "Seasonal resistance to multiple antibiotics is positively correlated with seasonal use of penicillins and macrolides" (Output by `make_figures.R`)
+  - `SupplementaryFigure1.pdf`: "Seasonality of antibiotic use and resistance by class in *Escherichia coli*" (Output by `make_figures.R`)
+  - `SupplementaryFigure2.pdf`: "Seasonality of antibiotic use and resistance by class in *Klebsiella pneumoniae*" (Output by `make_figures.R`)
+  - `SupplementaryFigure3.pdf`: "Seasonality of use and resistance for penicillins in *Escherichia coli* with a 12-month period model" (Output by `make_figures.R`)
+  - `SupplementaryFigure4.pdf`: "Spearman correlations between seasonal use and resistance with 0-3 months lag in *E. coli* and *K. pneumoniae*" (Output by `make_figures.R`)
+  - `SupplementaryFigure5.pdf`: "Wavelet analysis of antibiotic use by class" (Output by `wavelet_analysis.R`)
+  - `SupplementaryTable1.csv`: "Percent of claims by individual antibiotics within each class"
+  - `SupplementaryTable2.csv`: "Total number of isolates by demographics"
+  - `SupplementaryTable3.csv`: "Antibiotics included in analysis and percent resistance by hospital"
+  - `SupplementaryTable4.csv`: "Amplitudes and phases of seasonality of resistance in patients under 65 years old" (Output by `regression_analysis.R`)
+  - `SupplementaryTable5.csv`: "Comparison of the Akaike information criterion (AIC) values across two sinusoidal models for antibiotic use" (Output by `regression_analysis.R`)
+  - `SupplementaryTable6.csv`: "Comparison of the Akaike information criterion (AIC) values across two sinusoidal models for antibiotic resistance" (Output by `regression_analysis.R`)
+
 
 Correspondence: Daphne Sun <dssun@g.harvard.edu>
