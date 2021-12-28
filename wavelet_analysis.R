@@ -1,14 +1,10 @@
 #This script performs a wavelet analysis on the antibiotic use data
 
-#Load libraries 
-library(tidyverse)
-library(magrittr)
-
-# ######################################################
+# ##################################################
 # Inputs
-# ######################################################
+# ##################################################
 
-#Load antibiotic use data
+#Load antibiotic use dataset
 data.use = read_csv("raw_data/antibiotic_use_data.csv")
 
 #Edit input table
@@ -17,12 +13,11 @@ data.use = data.use %>%
   mutate(year_month = year + month/12) %>%
   mutate(t = (year - min(year)) * 12 + month) 
 
-# ######################################################
-# Calculate wavelets 
-# ######################################################
+# ##################################################
+# Compute wavelets
+# ##################################################
 
 #Compute use wavelet for each antibiotic class (uses WaveletComp package)
-
 fence = function(x, lower, upper) pmax(lower, pmin(upper, x))
 
 wt_plot_data = function(w) {
@@ -42,11 +37,10 @@ wt_plot_data = function(w) {
 
 wavelet.results = data.use %>%
   nest(-drug_class) %>%
-  mutate(wavelet = map(data, ~ WaveletComp::analyze.wavelet(., "claims_per_10000ppl_per_day", verbose = FALSE))) %>%
-  mutate(wavelet_plot_data = map(wavelet, wt_plot_data))
+  mutate(wavelet = map(data, ~ WaveletComp::analyze.wavelet(., "mean_daily_claims_per_10000ppl", verbose = FALSE))) %>%
+  mutate(wavelet_plot_data = map(wavelet, wt_plot_data)) 
 
-
-#Make wavelet plot (Figure S5)
+#Make wavelet figure (Fig S6)
 wavelet_plot = wavelet.results %>%
   select(drug_class, wavelet_plot_data) %>%
   unnest() %>%
@@ -58,10 +52,13 @@ wavelet_plot = wavelet.results %>%
   scale_fill_distiller(palette = 'RdYlBu') +
   geom_hline(yintercept = 3.65, linetype = 2) +
   geom_hline(yintercept = 2.58, linetype = 2) +
-  xlab('time (months since Jan 2011)') +
-  ylab('log2 period (months)') +
+  labs(x = "time (months since Jan 2011)", y = expression(log["2"]*"(period) (months)")) +
   theme_minimal() +
-  theme(text = element_text(size = 14))
+  theme(text = element_text(size = 12))
 
-#Save figure
-ggsave(wavelet_plot, filename = "figures/SupplementaryFigure5.pdf", width = 7.5, height = 5)
+# ##################################################
+# Save figure
+# ##################################################
+
+ggsave(wavelet_plot, filename = "figures/S6_Fig.tiff", width = 7.5, height = 5, dpi = 300, units = "in")
+ggsave(wavelet_plot, filename = "figures/S6_Fig.pdf", width = 7.5, height = 5)

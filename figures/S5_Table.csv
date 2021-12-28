@@ -1,0 +1,16 @@
+organism,drug,BWH,MGH
+E. coli,Amoxicillin/Clavulanate,17.8%,17.2%
+E. coli,Ampicillin,47.8%,47%
+E. coli,Ciprofloxacin,22.6%,21.1%
+E. coli,Nitrofurantoin,6%,5.1%
+E. coli,Tetracycline,29.1%,29.3%
+K. pneumoniae,Amoxicillin/Clavulanate,10.2%,8.2%
+K. pneumoniae,Ciprofloxacin,11.8%,11.1%
+K. pneumoniae,Nitrofurantoin,69.4%,68%
+K. pneumoniae,Tetracycline,21.3%,18.3%
+S. aureus,Ciprofloxacin,29.6%,30.7%
+S. aureus,Erythromycin,51.2%,54.9%
+S. aureus,Nitrofurantoin,1.1%,1%
+S. aureus,Oxacillin,33.4%,35.9%
+S. aureus,Penicillin,82.4%,84.3%
+S. aureus,Tetracycline,6.6%,6%

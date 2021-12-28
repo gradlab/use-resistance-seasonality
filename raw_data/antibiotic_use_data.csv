@@ -1,4 +1,4 @@
-year,month,drug_class,claims_per_10000ppl_per_day
+year,month,drug_class,mean_daily_claims_per_10000ppl
 2011,1,Macrolides,5.54112296507345
 2011,1,Nitrofurans,0.36026709234344606
 2011,1,Penicillins,6.220432557104127
