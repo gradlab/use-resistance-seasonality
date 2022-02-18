@@ -1,0 +1,2 @@
+organism,drug_name,drug_class,res_amplitude,res_phase,res_omega,res_upper,res_lower,res_sig,use_amplitude,use_phase,use_omega,use_upper,use_lower
+E. coli,Ampicillin,Penicillins,0.040510323005771294,2.881875376367425,0.5235987755982988,0.06230070375768292,0.018719942253859666,TRUE,1.1261429056797616,2.2114259595957124,0.5235987755982988,1.297208930475367,0.9550768808841564

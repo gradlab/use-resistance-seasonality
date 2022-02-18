@@ -40,10 +40,13 @@ wavelet.results = data.use %>%
   mutate(wavelet = map(data, ~ WaveletComp::analyze.wavelet(., "mean_daily_claims_per_10000ppl", verbose = FALSE))) %>%
   mutate(wavelet_plot_data = map(wavelet, wt_plot_data)) 
 
-#Make wavelet figure (Fig S6)
-wavelet_plot = wavelet.results %>%
+#Make figure data table
+fig_data = wavelet.results %>%
   select(drug_class, wavelet_plot_data) %>%
-  unnest() %>%
+  unnest()
+
+#Make wavelet figure (Fig S6)
+wavelet_plot = fig_data %>%
   ggplot(aes(x-1, y)) +
   geom_tile(aes(fill = amplitude)) +
   geom_ribbon(aes(ymin = coi, ymax = max(y)), alpha = 0.25) +
@@ -60,5 +63,6 @@ wavelet_plot = wavelet.results %>%
 # Save figure
 # ##################################################
 
+write_csv(fig_data, "figure_data/S6_Fig/S6_Fig_data.csv")
 ggsave(wavelet_plot, filename = "figures/S6_Fig.tiff", width = 7.5, height = 5, dpi = 300, units = "in")
 ggsave(wavelet_plot, filename = "figures/S6_Fig.pdf", width = 7.5, height = 5)

@@ -1,0 +1,181 @@
+organism,site_of_infection,month,num_isolates
+E. coli,abscess or fluid NOS,1,151
+E. coli,abscess or fluid NOS,2,147
+E. coli,abscess or fluid NOS,3,168
+E. coli,abscess or fluid NOS,4,171
+E. coli,abscess or fluid NOS,5,160
+E. coli,abscess or fluid NOS,6,168
+E. coli,abscess or fluid NOS,7,166
+E. coli,abscess or fluid NOS,8,167
+E. coli,abscess or fluid NOS,9,176
+E. coli,abscess or fluid NOS,10,172
+E. coli,abscess or fluid NOS,11,166
+E. coli,abscess or fluid NOS,12,159
+E. coli,blood,1,194
+E. coli,blood,2,182
+E. coli,blood,3,216
+E. coli,blood,4,200
+E. coli,blood,5,229
+E. coli,blood,6,208
+E. coli,blood,7,234
+E. coli,blood,8,239
+E. coli,blood,9,228
+E. coli,blood,10,241
+E. coli,blood,11,227
+E. coli,blood,12,219
+E. coli,respiratory tract,1,207
+E. coli,respiratory tract,2,198
+E. coli,respiratory tract,3,220
+E. coli,respiratory tract,4,204
+E. coli,respiratory tract,5,216
+E. coli,respiratory tract,6,222
+E. coli,respiratory tract,7,215
+E. coli,respiratory tract,8,241
+E. coli,respiratory tract,9,202
+E. coli,respiratory tract,10,253
+E. coli,respiratory tract,11,214
+E. coli,respiratory tract,12,251
+E. coli,skin/soft tissue,1,277
+E. coli,skin/soft tissue,2,214
+E. coli,skin/soft tissue,3,266
+E. coli,skin/soft tissue,4,257
+E. coli,skin/soft tissue,5,283
+E. coli,skin/soft tissue,6,264
+E. coli,skin/soft tissue,7,300
+E. coli,skin/soft tissue,8,321
+E. coli,skin/soft tissue,9,308
+E. coli,skin/soft tissue,10,299
+E. coli,skin/soft tissue,11,270
+E. coli,skin/soft tissue,12,255
+E. coli,urinary tract,1,9517
+E. coli,urinary tract,2,8569
+E. coli,urinary tract,3,9622
+E. coli,urinary tract,4,9483
+E. coli,urinary tract,5,9838
+E. coli,urinary tract,6,10125
+E. coli,urinary tract,7,10484
+E. coli,urinary tract,8,10851
+E. coli,urinary tract,9,10747
+E. coli,urinary tract,10,11041
+E. coli,urinary tract,11,9818
+E. coli,urinary tract,12,9767
+K. pneumoniae,abscess or fluid NOS,1,56
+K. pneumoniae,abscess or fluid NOS,2,59
+K. pneumoniae,abscess or fluid NOS,3,49
+K. pneumoniae,abscess or fluid NOS,4,62
+K. pneumoniae,abscess or fluid NOS,5,66
+K. pneumoniae,abscess or fluid NOS,6,78
+K. pneumoniae,abscess or fluid NOS,7,73
+K. pneumoniae,abscess or fluid NOS,8,88
+K. pneumoniae,abscess or fluid NOS,9,65
+K. pneumoniae,abscess or fluid NOS,10,72
+K. pneumoniae,abscess or fluid NOS,11,72
+K. pneumoniae,abscess or fluid NOS,12,66
+K. pneumoniae,blood,1,124
+K. pneumoniae,blood,2,81
+K. pneumoniae,blood,3,97
+K. pneumoniae,blood,4,98
+K. pneumoniae,blood,5,116
+K. pneumoniae,blood,6,115
+K. pneumoniae,blood,7,118
+K. pneumoniae,blood,8,157
+K. pneumoniae,blood,9,140
+K. pneumoniae,blood,10,135
+K. pneumoniae,blood,11,134
+K. pneumoniae,blood,12,104
+K. pneumoniae,respiratory tract,1,219
+K. pneumoniae,respiratory tract,2,189
+K. pneumoniae,respiratory tract,3,241
+K. pneumoniae,respiratory tract,4,235
+K. pneumoniae,respiratory tract,5,210
+K. pneumoniae,respiratory tract,6,226
+K. pneumoniae,respiratory tract,7,260
+K. pneumoniae,respiratory tract,8,299
+K. pneumoniae,respiratory tract,9,251
+K. pneumoniae,respiratory tract,10,255
+K. pneumoniae,respiratory tract,11,227
+K. pneumoniae,respiratory tract,12,247
+K. pneumoniae,skin/soft tissue,1,94
+K. pneumoniae,skin/soft tissue,2,75
+K. pneumoniae,skin/soft tissue,3,94
+K. pneumoniae,skin/soft tissue,4,105
+K. pneumoniae,skin/soft tissue,5,90
+K. pneumoniae,skin/soft tissue,6,114
+K. pneumoniae,skin/soft tissue,7,143
+K. pneumoniae,skin/soft tissue,8,164
+K. pneumoniae,skin/soft tissue,9,126
+K. pneumoniae,skin/soft tissue,10,111
+K. pneumoniae,skin/soft tissue,11,106
+K. pneumoniae,skin/soft tissue,12,102
+K. pneumoniae,urinary tract,1,1589
+K. pneumoniae,urinary tract,2,1323
+K. pneumoniae,urinary tract,3,1499
+K. pneumoniae,urinary tract,4,1401
+K. pneumoniae,urinary tract,5,1607
+K. pneumoniae,urinary tract,6,1847
+K. pneumoniae,urinary tract,7,1943
+K. pneumoniae,urinary tract,8,2122
+K. pneumoniae,urinary tract,9,2076
+K. pneumoniae,urinary tract,10,1957
+K. pneumoniae,urinary tract,11,1704
+K. pneumoniae,urinary tract,12,1702
+S. aureus,abscess or fluid NOS,1,380
+S. aureus,abscess or fluid NOS,2,344
+S. aureus,abscess or fluid NOS,3,358
+S. aureus,abscess or fluid NOS,4,388
+S. aureus,abscess or fluid NOS,5,407
+S. aureus,abscess or fluid NOS,6,427
+S. aureus,abscess or fluid NOS,7,509
+S. aureus,abscess or fluid NOS,8,507
+S. aureus,abscess or fluid NOS,9,505
+S. aureus,abscess or fluid NOS,10,495
+S. aureus,abscess or fluid NOS,11,429
+S. aureus,abscess or fluid NOS,12,403
+S. aureus,blood,1,228
+S. aureus,blood,2,211
+S. aureus,blood,3,225
+S. aureus,blood,4,197
+S. aureus,blood,5,230
+S. aureus,blood,6,233
+S. aureus,blood,7,245
+S. aureus,blood,8,259
+S. aureus,blood,9,243
+S. aureus,blood,10,242
+S. aureus,blood,11,244
+S. aureus,blood,12,245
+S. aureus,respiratory tract,1,1085
+S. aureus,respiratory tract,2,893
+S. aureus,respiratory tract,3,1018
+S. aureus,respiratory tract,4,917
+S. aureus,respiratory tract,5,974
+S. aureus,respiratory tract,6,935
+S. aureus,respiratory tract,7,984
+S. aureus,respiratory tract,8,946
+S. aureus,respiratory tract,9,937
+S. aureus,respiratory tract,10,977
+S. aureus,respiratory tract,11,956
+S. aureus,respiratory tract,12,976
+S. aureus,skin/soft tissue,1,1744
+S. aureus,skin/soft tissue,2,1596
+S. aureus,skin/soft tissue,3,1858
+S. aureus,skin/soft tissue,4,1773
+S. aureus,skin/soft tissue,5,1898
+S. aureus,skin/soft tissue,6,2062
+S. aureus,skin/soft tissue,7,2237
+S. aureus,skin/soft tissue,8,2376
+S. aureus,skin/soft tissue,9,2267
+S. aureus,skin/soft tissue,10,2140
+S. aureus,skin/soft tissue,11,1962
+S. aureus,skin/soft tissue,12,1928
+S. aureus,urinary tract,1,324
+S. aureus,urinary tract,2,330
+S. aureus,urinary tract,3,323
+S. aureus,urinary tract,4,301
+S. aureus,urinary tract,5,399
+S. aureus,urinary tract,6,338
+S. aureus,urinary tract,7,347
+S. aureus,urinary tract,8,340
+S. aureus,urinary tract,9,333
+S. aureus,urinary tract,10,320
+S. aureus,urinary tract,11,292
+S. aureus,urinary tract,12,334

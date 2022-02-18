@@ -43,9 +43,8 @@ Included are all code and raw data need to reproduce all analyses associated wit
 - `figures/`: contains all figures associated with this publication
   - `Fig1.pdf`: "Seasonal patterns of antibiotic use by class" (Output by `make_figures.R`)
   - `Fig2.pdf`: "Seasonality of antibiotic use and resistance by class in *Staphylococcus aureus*" (Output by `make_figures.R`)
-  - `Fig3.pdf`: "Amplitudes of seasonality of resistance by species and antibiotic class" (Output by `make_figures.R`)
-  - `Fig4.pdf`: "Phases of seasonality of use and resistance by species and antibiotic class" (Output by `make_figures.R`)
-  - `Fig5.pdf`: "Seasonal resistance to multiple antibiotics is positively correlated with seasonal use of penicillins and macrolides" (Output by `make_figures.R`)
+  - `Fig3.pdf`: "Amplitudes and phases of seasonality of resistance by species and antibiotic class" (Output by `make_figures.R`)
+  - `Fig4.pdf`: "Seasonal resistance to multiple antibiotics is positively correlated with seasonal use of penicillins and macrolides" (Output by `make_figures.R`)
   - `Table1.csv`: "Comparison of estimated amplitudes of seasonality across three sinusoidal models for resistance" (Output by `make_figures.R`)
   
   - `S1_Fig.pdf`: "Seasonality of antibiotic use and resistance by class in *Escherichia coli*" (Output by `make_figures.R`)
@@ -62,6 +61,27 @@ Included are all code and raw data need to reproduce all analyses associated wit
   - `S5_Table.csv`: "Antibiotics included in analysis and percent resistance by hospital" (Output by `make_figures.R`)
   - `S6_Table.csv`: "Comparison of the Akaike information criterion (AIC) values between 6- and 12-month period models for antibiotic use" (Output by `make_figures.R`)
   - `S7_Table.csv`: "Comparison of the AIC values between 6- and 12-month period models for antibiotic resistance" (Output by `make_figures.R`)
+  
+- `figure_data/`: contains data tables with numerical values underlying each figure
+  - `Fig1/Fig1A_data.csv`: numerical values underlying Fig1A
+  - `Fig1/Fig1B_model_data.csv`: numerical values underlying the sinusoidal models (solid lines) in Fig1B
+  - `Fig1/Fig1B_model_deviates.csv`: numerical values for the seasonal deviates (point values) in Fig1B
+  - `Fig2/Fig2_model_data.csv`: numerical values underlying the sinusoidal models (solid and dotted lines) in Fig2
+  - `Fig2/Fig2_deviates_data.csv`: numerical values for the seasonal deviates (point values) in Fig2
+  - `Fig3/Fig3A_amplitudes_data.csv`: numerical values underlying Fig3A
+  - `Fig3/Fig3B_resistance_phases_data.csv`: numerical values for resistance phases in Fig3B
+  - `Fig3/Fig3B_use_phases_data.csv`: numerical values for use phases in Fig3B
+  - `S1_Fig/S1_Fig_model_data.csv`: numerical values underlying the sinusoidal models (solid and dotted lines) in FigS1
+  - `S1_Fig/S1_Fig_deviates_data.csv`: numerical values for the seasonal deviates (point values) in FigS1
+  - `S2_Fig/S2_Fig_model_data.csv`: numerical values underlying the sinusoidal models (solid and dotted lines) in FigS2
+  - `S2_Fig/S2_Fig_deviates_data.csv`: numerical values for the seasonal deviates (point values) in FigS2
+  - `S3_Fig/S3_Fig_model_data.csv`: numerical values underlying the sinusoidal model (solid and dotted lines) in FigS3
+  - `S3_Fig/S3_Fig_deviates_data.csv`: numerical values for the seasonal deviates (point values) in FigS3
+  - `S5_Fig/S5A_Fig_data.csv`: numerical values underlying FigS5A
+  - `S5_Fig/S5B_Fig_data.csv`: numerical values underlying FigS5B
+  - `S5_Fig/S5C_Fig_data.csv`: numerical values underlying FigS5C
+  - `S6_Fig/S6_Fig_data.csv`: numerical values underlying FigS6
+  
 
 
 Correspondence: Daphne Sun <dssun@g.harvard.edu>

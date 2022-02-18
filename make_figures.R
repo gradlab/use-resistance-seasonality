@@ -62,7 +62,9 @@ labels = data.frame(drug_class = c("Penicillins", "Macrolides", "Quinolones", "T
                     x.pos = c(4, 4, 4, 4, 4),
                     y.pos = c(6.6, 3.3, 2.4, 1.5, 0.7))
 
-f1a = data.use %>%
+f1a_data = data.use
+
+f1a = f1a_data %>%
   mutate(year_month = paste(as.character(year), as.character(str_pad(month, 2, pad = "0")), sep = "-")) %>%
   mutate(x = dense_rank(year_month)) %>%
   ggplot(aes(x=x, y=mean_daily_claims_per_10000ppl, group=drug_class, color=drug_class)) +
@@ -120,20 +122,25 @@ plot_use_model_func = function(deviates, class, amplitude, phase, omega, a_lower
   return(p)
 }
 
-f1b_plots = use.model.params.fil %>%
+f1b_data_model = use.model.params.fil %>%
   filter(term %in% c("amplitude", "phase")) %>%
   select(drug_class, omega, term, estimate, ci.lower, ci.upper, p.value.BH) %>%
   gather(variable, value, -(c("drug_class", "term", "omega"))) %>%
   unite(temp, term, variable) %>%
   spread(temp, value) %>%
-  # left_join(use.amplitude.p %>% select(drug_class, omega, amplitude_p.value.BH = p.value.BH), by = c("drug_class", "omega")) %>%
-  mutate(sig = amplitude_p.value.BH < 0.05) %>%
-  #add seasonal deviates table
+  mutate(sig = amplitude_p.value.BH < 0.05) 
+
+f1b_data_deviates = f1b_data_model %>%
+  select(drug_class, omega) %>%
+  left_join(use.deviates) %>%
+  select(drug_class, month, seasonal_deviate, sem)
+
+f1b_plots = f1b_data_model %>%
   left_join(
-    use.deviates %>%
-      nest(-drug_class, -omega) %>%
+    f1b_data_deviates %>%
+      nest(-drug_class) %>%
       rename(deviates_table = data),
-    by = c("drug_class", "omega")
+    by = c("drug_class")
   ) %>%
   
   #make plots
@@ -201,7 +208,8 @@ plot_use_resistance_func = function(deviates, drug, class, u_a, u_p, u_o, u_low,
   return(p)
 } 
 
-use_res_plots = res.modelA.params.fil %>%
+#Make figure data tables
+f2_data_all = res.modelA.params.fil %>%
   filter(term %in% c("amplitude", "phase")) %>%
   select(organism, drug_name, drug_class, omega, term, estimate, ci.lower, ci.upper, p.value.BH) %>%
   gather(variable, value, -(c("organism", "drug_name", "drug_class", "term", "omega"))) %>%
@@ -228,7 +236,40 @@ use_res_plots = res.modelA.params.fil %>%
       select(drug_class, use_amplitude = amplitude_estimate, use_phase = phase_estimate, use_omega = omega,
              use_upper = amplitude_ci.upper, use_lower = amplitude_ci.lower),
     by = c("drug_class")
-  ) %>%
+  ) 
+
+f2_data_model = f2_data_all %>%
+  filter(organism == "S. aureus") %>%
+  select(-deviates_table)
+
+f2_data_deviates = f2_data_all %>%
+  filter(organism == "S. aureus") %>%
+  select(organism, drug_name, deviates_table) %>%
+  unnest(deviates_table) %>%
+  select(organism, drug_name, month, seasonal_deviate, sem)
+
+fS1_data_model = f2_data_all %>%
+  filter(organism == "E. coli") %>%
+  select(-deviates_table)
+
+fS1_data_deviates = f2_data_all %>%
+  filter(organism == "E. coli") %>%
+  select(organism, drug_name, deviates_table) %>%
+  unnest(deviates_table) %>%
+  select(organism, drug_name, month, seasonal_deviate, sem)
+
+fS2_data_model = f2_data_all %>%
+  filter(organism == "K. pneumoniae") %>%
+  select(-deviates_table)
+
+fS2_data_deviates = f2_data_all %>%
+  filter(organism == "K. pneumoniae") %>%
+  select(organism, drug_name, deviates_table) %>%
+  unnest(deviates_table) %>%
+  select(organism, drug_name, month, seasonal_deviate, sem)
+
+#Make plots
+use_res_plots = f2_data_all %>%
   #get use-resistance scaling ratio
   mutate(u.r_ratio = abs(use_amplitude/res_amplitude)) %>%
   group_by(drug_class) %>%
@@ -273,7 +314,7 @@ fS2 = do.call(ggarrange, c(fS2_plots, nrow = 2, ncol = 2)) %>%
   annotate_figure(right = text_grob("Seasonal deviates in use (mean daily claims/10,000 people)", size = 11, rot = 270)) 
 
 #Make figure S3
-fS3_plots = res.modelA.params %>%
+fS3_data_all = res.modelA.params %>%
   filter(organism == "E. coli" & drug_code == "AMP" & period == 12) %>%
   filter(term %in% c("amplitude", "phase")) %>%
   select(organism, drug_name, drug_class, omega, term, estimate, ci.lower, ci.upper, p.value.BH) %>%
@@ -302,7 +343,17 @@ fS3_plots = res.modelA.params %>%
       select(drug_class, use_amplitude = amplitude_estimate, use_phase = phase_estimate, use_omega = omega,
              use_upper = amplitude_ci.upper, use_lower = amplitude_ci.lower),
     by = c("drug_class")
-  ) %>%
+  )
+
+fS3_data_model = fS3_data_all %>%
+  select(-deviates_table)
+
+fS3_data_deviates = fS3_data_all %>%
+  select(organism, drug_name, deviates_table) %>%
+  unnest(deviates_table) %>%
+  select(organism, drug_name, month, seasonal_deviate, sem)
+
+fS3_plots = fS3_data_all %>%
   #get use-resistance scaling ratio
   mutate(u.r_ratio = abs(use_amplitude/res_amplitude)) %>%
   group_by(drug_class) %>%
@@ -324,51 +375,51 @@ fS3 = do.call(ggarrange, c(fS3_plots, nrow = 1, ncol = 1)) %>%
 # Make Figure 3
 # ##################################################
 
-#Make amplitude plots function
-plot_amplitudes_func = function(dat, title) {
-  p = ggplot(data = dat, aes(x = reorder(drug_code, estimate), y = estimate, color = drug_class)) +
-    geom_point(size = 2) +
-    geom_errorbar(aes(ymin = ci.lower, ymax = ci.upper), width = 0.4) +
-    geom_hline(yintercept = 0, color = "grey20", linetype = "dashed") +
-    scale_y_continuous(breaks = c(0, 0.05, 0.1), limits = c(-0.02, 0.1)) + #CHANGED lower limits from -0.01 to -0.02 for under 65 analysis
-    scale_color_manual(values = colors, name = "Antibiotic Class") +
-    coord_flip() +
-    ggtitle(title) +
-    theme_minimal() +
-    theme(plot.title = element_text(face = "bold.italic", hjust = 0.5, size = 11),
-          axis.title = element_blank(),
-          axis.text = element_text(size = 11),
-          legend.title = element_text(size = 10, face = "bold"),
-          legend.text = element_text(size = 10)
-    )
+#Define plot labels
+labs = c("S. aureus/CIP" = expression(paste(italic("S. aureus"), " / CIP")),
+         "S. aureus/ERY" = expression(paste(italic("S. aureus"), " / ERY")),
+         "S. aureus/NIT" = expression(paste(italic("S. aureus"), " / NIT")),
+         "S. aureus/OXA" = expression(paste(italic("S. aureus"), " / OXA")),
+         "S. aureus/PEN" = expression(paste(italic("S. aureus"), " / PEN")),
+         "S. aureus/TET" = expression(paste(italic("S. aureus"), " / TET")),
+         "E. coli/AMC" = expression(paste(italic("E. coli"), " / AMC")),
+         "E. coli/AMP" = expression(paste(italic("E. coli"), " / AMP")),
+         "E. coli/CIP" = expression(paste(italic("E. coli"), " / CIP")),
+         "E. coli/NIT" = expression(paste(italic("E. coli"), " / NIT")),
+         "E. coli/TET" = expression(paste(italic("E. coli"), " / TET")),
+         "K. pneumoniae/AMC" = expression(paste(italic("K. pneumoniae"), " / AMC")),
+         "K. pneumoniae/CIP" = expression(paste(italic("K. pneumoniae"), " / CIP")),
+         "K. pneumoniae/NIT" = expression(paste(italic("K. pneumoniae"), " / NIT")),
+         "K. pneumoniae/TET" = expression(paste(italic("K. pneumoniae"), " / TET"))
+)
+
+#Plot amplitudes (3A)
+f3a_data = res.modelA.params.fil %>%
+  filter(term == "amplitude") %>%
+  mutate(org_drug = paste(organism, drug_code, sep = "/")) %>%
+  select(org_drug, drug_class, period, term, estimate, ci.lower, ci.upper)
   
-  return(p)
-}
+f3a = f3a_data %>%
+  ggplot(aes(x = reorder(org_drug, estimate), y = estimate, color = drug_class)) +
+  geom_point(size = 2) +
+  geom_errorbar(aes(ymin = ci.lower, ymax = ci.upper), width = 0.4) +
+  geom_hline(yintercept = 0, color = "grey20", linetype = "dashed") +
+  scale_y_continuous(breaks = c(0, 0.05, 0.1), limits = c(-0.02, 0.1)) +
+  scale_x_discrete(labels = labs) +
+  scale_color_manual(values = colors, name = "Antibiotic Class") +
+  ylab(expression(atop("Amplitude of seasonality", "(" ~ log["2"] ~ "(MIC) deviates)"))) +
+  theme_minimal() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 10),
+    axis.text.x = element_text(size = 10, angle = 45, hjust = 1, vjust = 1),
+    axis.text.y = element_text(size = 10),
+    legend.title = element_text(size = 9, face = "bold"),
+    legend.text = element_text(size = 9),
+  )
 
-f3_SA_plot = res.modelA.params.fil %>%
-  filter(term == "amplitude") %>%
-  filter(organism == "S. aureus") %>%
-  plot_amplitudes_func(., "S. aureus")
-
-f3_EC_plot = res.modelA.params.fil %>%
-  filter(term == "amplitude") %>%
-  filter(organism == "E. coli") %>%
-  plot_amplitudes_func(., "E. coli")
-
-f3_KP_plot = res.modelA.params.fil %>%
-  filter(term == "amplitude") %>%
-  filter(organism == "K. pneumoniae") %>%
-  plot_amplitudes_func(., "K. pneumoniae")
-
-f3 = ggarrange(f3_SA_plot, f3_EC_plot, f3_KP_plot, nrow = 1, ncol = 3, common.legend = TRUE, legend = "right") %>%
-  annotate_figure(bottom = text_grob(expression("Amplitude of seasonality ("*log["2"]*"(MIC) deviates)"), size = 11))
-
-# ##################################################
-# Make Figure 4
-# ##################################################
-
-#Make resistance phases table
-res.phases = bind_rows(
+#Plot phases (3B)
+f3b_data_resistance = bind_rows(
   res.modelA.params.fil %>%
     filter(term == "phase"),
   #add second peak for org/drugs with 6 month period
@@ -386,10 +437,10 @@ res.phases = bind_rows(
          ci.lower = ifelse(organism == "K. pneumoniae" & drug_code == "NIT", ci.lower - 12, ci.lower),
          ci.upper = ifelse(organism == "K. pneumoniae" & drug_code == "NIT", ci.upper - 12, ci.upper)
   ) %>%
-  mutate(org_drug = paste(organism, drug_code, sep = "/")) 
+  mutate(org_drug = paste(organism, drug_code, sep = "/")) %>%
+  select(org_drug, drug_class, period, term, estimate, ci.lower, ci.upper)
 
-#Make use phases table
-use.phases = bind_rows(
+f3b_data_use = bind_rows(
   use.model.params.fil %>%
     filter(term == "phase"),
   #add second peak for org/drugs with 6 month period
@@ -398,48 +449,38 @@ use.phases = bind_rows(
     filter(period == 6) %>%
     mutate(estimate = estimate + 6, ci.lower = ci.lower + 6, ci.upper = ci.upper + 6)
 ) %>%
-  filter(drug_class != "Tetracyclines")
+  filter(drug_class != "Tetracyclines") %>%
+  select(drug_class, period, term, estimate, ci.lower, ci.upper)
 
-#Define plot labels
-labs = c("S. aureus/CIP" = expression(paste(italic("S. aureus"), " / CIP")),
-         "S. aureus/ERY" = expression(paste(italic("S. aureus"), " / ERY")),
-         "S. aureus/NIT" = expression(paste(italic("S. aureus"), " / NIT")),
-         "S. aureus/OXA" = expression(paste(italic("S. aureus"), " / OXA")),
-         "E. coli/AMP" = expression(paste(italic("E. coli"), " / AMP")),
-         "E. coli/CIP" = expression(paste(italic("E. coli"), " / CIP")),
-         "E. coli/NIT" = expression(paste(italic("E. coli"), " / NIT")),
-         "K. pneumoniae/CIP" = expression(paste(italic("K. pneumoniae"), " / CIP")),
-         "K. pneumoniae/NIT" = expression(paste(italic("K. pneumoniae"), " / NIT"))
-)
-
-
-#Plot figure 4
-f4 = ggplot(data = res.phases) +
+f3b = ggplot(data = f3b_data_resistance) +
   facet_wrap(~drug_class, scales = "free", nrow = 5) +
   geom_point(aes(x = reorder(org_drug, estimate), y = estimate, color=drug_class), size = 2) +
   geom_errorbar(aes(x = reorder(org_drug, estimate), ymin = ci.lower, ymax = ci.upper, color=drug_class), width = 0.4) +
-  geom_hline(data = use.phases, aes(yintercept = estimate, color = drug_class), size = 1) +
-  geom_rect(data = use.phases, aes(ymin = ci.lower, ymax = ci.upper, xmin = -Inf, xmax = Inf, fill = drug_class), alpha = 0.3) +
+  geom_hline(data = f3b_data_use, aes(yintercept = estimate, color = drug_class), size = 1) +
+  geom_rect(data = f3b_data_use, aes(ymin = ci.lower, ymax = ci.upper, xmin = -Inf, xmax = Inf, fill = drug_class), alpha = 0.3) +
   scale_color_manual(values = colors) +
   scale_fill_manual(values = colors) +
   scale_x_discrete(labels = labs) +
-  scale_y_continuous(breaks = seq(-2 ,11, 1), limits = c(-2.5, 11), #Changed -2.2 to -2.5
+  scale_y_continuous(breaks = seq(-2 ,11, 1), limits = c(-2.5, 11), 
                      labels = c("Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov")) +
   coord_flip() +
   ylab("Peak month(s) of seasonality") +
   theme_minimal() +
   theme(panel.grid.minor = element_blank(),
         legend.position = "none",
-        strip.text.x = element_text(size = 11, face = "bold"),
-        axis.text.x = element_text(size = 11, angle = 45, hjust = 1, vjust = 1),
-        axis.text.y = element_text(size = 11),
-        axis.title.x = element_text(size = 11),
+        strip.text.x = element_text(size = 10, face = "bold"),
+        axis.text.x = element_text(size = 10, angle = 45, hjust = 1, vjust = 1),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 10),
         axis.title.y = element_blank()
   )
 
+#Make figure 3
+f3 = ggarrange(f3a, f3b, nrow = 2, ncol = 1, heights = c(1, 1.5), labels = c("A.", "B."))
+
 
 # ##################################################
-# Make Figures 5, S4
+# Make Figures 4, S4
 # ##################################################
 
 plot_corr_func = function(dat, o) {
@@ -575,12 +616,12 @@ plot_corr_func = function(dat, o) {
   return(p)
 }
 
-f5_SA = plot_corr_func(correlations, "S. aureus")
-f5_EC = plot_corr_func(correlations, "E. coli") %>% annotate_figure(top = "")
-f5_KP = plot_corr_func(correlations, "K. pneumoniae") %>% annotate_figure(top = "")
+f4_SA = plot_corr_func(correlations, "S. aureus")
+f4_EC = plot_corr_func(correlations, "E. coli") %>% annotate_figure(top = "")
+f4_KP = plot_corr_func(correlations, "K. pneumoniae") %>% annotate_figure(top = "")
 
-f5 = f5_SA
-fS4 = ggarrange(f5_EC, f5_KP, ncol = 1, nrow = 2, heights = c(2, 1.3), labels = c("A.", "B."))
+f4 = f4_SA
+fS4 = ggarrange(f4_EC, f4_KP, ncol = 1, nrow = 2, heights = c(2, 1.3), labels = c("A.", "B."))
 
 # ##################################################
 # Make Table 1
@@ -636,7 +677,7 @@ demographic_colors = setNames(c("#d7b5d8", "#fbb4b9", "#f768a1", "#c51b8a", "#7a
                               c("skin/soft tissue", "abscess or fluid NOS", "blood", "respiratory tract", "urinary tract", "F", "M", "00-19", "20-39", "40-64", "65+"))
 
 #Plot monthly num of isolates by age group
-fS5_a = bind_rows(data.SA, data.EC, data.KP) %>%
+fS5a_data = bind_rows(data.SA, data.EC, data.KP) %>%
   mutate(age_group = case_when(age <= 19 ~ "00-19",
                                age > 19 & age <= 39 ~ "20-39",
                                age > 39 & age <= 64 ~ "40-64",
@@ -645,8 +686,9 @@ fS5_a = bind_rows(data.SA, data.EC, data.KP) %>%
   )) %>%
   group_by(organism, age_group, month) %>%
   summarise(num_isolates = n_distinct(isolate_ID)) %>%
-  ungroup() %>%
+  ungroup()
   
+fS5_a = fS5a_data %>%
   ggplot(aes(x = month, y = num_isolates, fill = age_group)) +
   facet_wrap(~organism, scales = "free_y") +
   geom_bar(stat = "identity") +
@@ -664,11 +706,12 @@ fS5_a = bind_rows(data.SA, data.EC, data.KP) %>%
         legend.position = "bottom") 
 
 #Plot monthly num of isolates by sex
-fS5_b = bind_rows(data.SA, data.EC, data.KP) %>%
+fS5b_data = bind_rows(data.SA, data.EC, data.KP) %>%
   group_by(organism, sex, month) %>%
   summarise(num_isolates = n_distinct(isolate_ID)) %>%
-  ungroup() %>%
+  ungroup()
   
+fS5_b = fS5b_data %>%
   ggplot(aes(x = month, y = num_isolates, fill = sex)) +
   facet_wrap(~organism, scales = "free_y") +
   geom_bar(stat = "identity") +
@@ -686,7 +729,7 @@ fS5_b = bind_rows(data.SA, data.EC, data.KP) %>%
         legend.position = "bottom") 
 
 #Plot monthly num of isolates by site of infection
-fS5_c = bind_rows(data.SA, data.EC, data.KP) %>%
+fS5c_data = bind_rows(data.SA, data.EC, data.KP) %>%
   group_by(organism, site_of_infection, month) %>%
   summarise(num_isolates = n_distinct(isolate_ID)) %>%
   ungroup() %>%
@@ -696,8 +739,9 @@ fS5_c = bind_rows(data.SA, data.EC, data.KP) %>%
     site_of_infection == "blood" ~ "blood",
     site_of_infection == "respiratory_tract" ~ "respiratory tract",
     site_of_infection == "urinary_tract" ~ "urinary tract"
-  )) %>%
-  
+  ))
+
+fS5_c = fS5c_data %>%
   ggplot(aes(x = month, y = num_isolates, fill = site_of_infection)) +
   facet_wrap(~organism, scales = "free_y") +
   geom_bar(stat = "identity") +
@@ -845,9 +889,8 @@ tableS7 = res.modelA.params %>%
 #Save figures as tiff
 ggsave(f1, filename = "figures/Fig1.tiff", width = 7.5, height = 5, dpi = 300, units = "in")
 ggsave(f2, filename = "figures/Fig2.tiff", width = 6.5, height = 5.5, dpi = 300, units = "in")
-ggsave(f3, filename = "figures/Fig3.tiff", width = 6.5, height = 4, dpi = 300, units = "in")
-ggsave(f4, filename = "figures/Fig4.tiff", width = 6, height = 5.5, dpi = 300, units = "in")
-ggsave(f5, filename = "figures/Fig5.tiff", width = 7.5, height = 5, dpi = 300, units = "in")
+ggsave(f3, filename = "figures/Fig3.tiff", width = 6.5, height = 8.75, dpi = 300, units = "in")
+ggsave(f4, filename = "figures/Fig4.tiff", width = 7.5, height = 5, dpi = 300, units = "in")
 
 ggsave(fS1, filename = "figures/S1_Fig.tiff", width = 6.5, height = 5.5, dpi = 300, units = "in")
 ggsave(fS2, filename = "figures/S2_Fig.tiff", width = 5, height = 5.5, dpi = 300, units = "in")
@@ -867,12 +910,32 @@ write_csv(tableS7, "figures/S7_Table.csv")
 #Save figures as pdf
 ggsave(f1, filename = "figures/Fig1.pdf", width = 7.5, height = 5)
 ggsave(f2, filename = "figures/Fig2.pdf", width = 6.5, height = 5.5)
-ggsave(f3, filename = "figures/Fig3.pdf", width = 6.5, height = 4)
-ggsave(f4, filename = "figures/Fig4.pdf", width = 6, height = 5.5)
-ggsave(f5, filename = "figures/Fig5.pdf", width = 7.5, height = 5)
+ggsave(f3, filename = "figures/Fig3.pdf", width = 6.5, height = 8.75, dpi = 300, units = "in")
+ggsave(f4, filename = "figures/Fig4.pdf", width = 7.5, height = 5, dpi = 300, units = "in")
 
 ggsave(fS1, filename = "figures/S1_Fig.pdf", width = 6.5, height = 5.5)
 ggsave(fS2, filename = "figures/S2_Fig.pdf", width = 5, height = 5.5)
 ggsave(fS3, filename = "figures/S3_Fig.pdf", width = 3, height = 3)
 ggsave(fS4, filename = "figures/S4_Fig.pdf", width = 7.5, height = 8)
 ggsave(fS5, filename = "figures/S5_Fig.pdf", width = 6.5, height = 7)
+
+#Save underlying data for each figure
+write_csv(f1a_data, "figure_data/Fig1/Fig1A_data.csv")
+write_csv(f1b_data_model, "figure_data/Fig1/Fig1B_model_data.csv")
+write_csv(f1b_data_deviates, "figure_data/Fig1/Fig1B_model_deviates.csv")
+write_csv(f2_data_model, "figure_data/Fig2/Fig2_model_data.csv")
+write_csv(f2_data_deviates, "figure_data/Fig2/Fig2_deviates_data.csv")
+write_csv(f3a_data, "figure_data/Fig3/Fig3A_amplitudes_data.csv")
+write_csv(f3b_data_resistance, "figure_data/Fig3/Fig3B_resistance_phases_data.csv")
+write_csv(f3b_data_use, "figure_data/Fig3/Fig3B_use_phases_data.csv")
+
+write_csv(fS1_data_model, "figure_data/S1_Fig/S1_Fig_model_data.csv")
+write_csv(fS1_data_deviates, "figure_data/S1_Fig/S1_Fig_deviates_data.csv")
+write_csv(fS2_data_model, "figure_data/S2_Fig/S2_Fig_model_data.csv")
+write_csv(fS2_data_deviates, "figure_data/S2_Fig/S2_Fig_deviates_data.csv")
+write_csv(fS3_data_model, "figure_data/S3_Fig/S3_Fig_model_data.csv")
+write_csv(fS3_data_deviates, "figure_data/S3_Fig/S3_Fig_deviates_data.csv")
+write_csv(fS5a_data, "figure_data/S5_Fig/S5A_Fig_data.csv")
+write_csv(fS5b_data, "figure_data/S5_Fig/S5B_Fig_data.csv")
+write_csv(fS5c_data, "figure_data/S5_Fig/S5C_Fig_data.csv")
+
