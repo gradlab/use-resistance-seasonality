@@ -1,4 +1,4 @@
-# Code associated with "Large variation in the association between seasonal antibiotic use and resistance across multiple bacterial species and antibiotic classes"
+# Code associated with "Analysis of multiple bacterial species and antibiotic classes reveals large variation in the association between seasonal antibiotic use and resistance"
 
 ### Daphne S. Sun, Stephen M. Kissler, Sanjat Kanjilal, Scott W. Olesen, Marc Lipsitch, Yonatan H. Grad
 
